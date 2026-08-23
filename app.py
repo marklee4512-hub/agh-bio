@@ -80,7 +80,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# 🚀 다국어 지원 및 자동 초기화 기능이 추가된 무인 대기화면(스크린세이버)
+# 🚀 다국어 지원 및 자동 초기화 기능이 추가된 무인 대기화면
 components.html("""
 <div id="screensaver" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,90,50,0.98); z-index:999999; flex-direction:column; justify-content:center; align-items:center; cursor:pointer;">
     <h1 style="color:white; font-size:5rem; font-weight:900; margin-bottom:20px; text-align:center;">AGH GREENHEALTH BIO</h1>
@@ -88,7 +88,6 @@ components.html("""
 </div>
 <style>@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }</style>
 <script>
-    // 4개 국어 롤링 문구
     const texts = [
         "👆 화면을 터치해서 AI 맞춤 상담을 시작하세요",
         "👆 Touch the screen to start AI consultation",
@@ -100,7 +99,7 @@ components.html("""
         textIdx = (textIdx + 1) % texts.length;
         let el = document.getElementById('ss-text');
         if(el) el.innerText = texts[textIdx];
-    }, 3000); // 3초마다 언어 변경
+    }, 3000); 
 
     let timeout;
     let resetTimeout;
@@ -108,16 +107,8 @@ components.html("""
         document.getElementById('screensaver').style.display = 'none';
         clearTimeout(timeout);
         clearTimeout(resetTimeout);
-        
-        // 1. 3분(180,000ms) 미조작 시 스크린세이버 작동
-        timeout = setTimeout(() => {
-            document.getElementById('screensaver').style.display = 'flex';
-        }, 180000);
-        
-        // 2. 5분(300,000ms) 미조작 시 화면 완전 새로고침(이전 손님 대화 내역 자동 초기화)
-        resetTimeout = setTimeout(() => {
-            window.parent.location.reload();
-        }, 300000);
+        timeout = setTimeout(() => { document.getElementById('screensaver').style.display = 'flex'; }, 180000);
+        resetTimeout = setTimeout(() => { window.parent.location.reload(); }, 300000);
     }
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
@@ -127,7 +118,7 @@ components.html("""
 </script>
 """, height=0)
 
-# --- 4. 4개 국어 완벽 딕셔너리 ---
+# --- 4. 4개 국어 완벽 딕셔너리 (프롬프트/명령어 연동 포함) ---
 UI_TEXT = {
     "KR": {
         "title": "🍀 AGH GREENHEALTH AI : Bio",
@@ -143,9 +134,20 @@ UI_TEXT = {
         "trs_tip": "💡 **스마트 꿀팁:** 공항에 가시기 전, 스마트폰에 **'TRS 앱'**을 다운받아 영수증 정보와 환급받을 카드 정보를 미리 입력해 두세요! 전용 쾌속 라인을 통해 초고속으로 환급이 가능합니다.",
         "md_recommend": "👑 이번 주 사장님 강력 추천", "top5": "🔥 실시간 매장 TOP 5", "catalog": "📁 제품 카탈로그",
         "reset_chat": "🔄 대화 초기화", "quick_search": "🔍 빠른 테마 검색:",
-        "theme1": "#✈️ 호주 귀국 필수 선물", "theme2": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3": "#💻 만성피로 직장인 추천",
+        
+        # 버튼 텍스트
+        "theme1_btn": "#✈️ 호주 귀국 필수 선물", "theme2_btn": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3_btn": "#💻 만성피로 직장인 추천",
+        # 🚨 AI에게 전달되는 실제 백그라운드 프롬프트 명령 (언어별 매칭 완료)
+        "theme1_prompt": "호주 귀국 시 가족과 지인들에게 선물하기 가장 좋은 베스트 제품들을 추천해 줘.",
+        "theme2_prompt": "50대~60대 부모님 관절과 눈 건강에 좋은 효도 선물 세트를 추천해 줘.",
+        "theme3_prompt": "매일 야근하고 피곤한 직장인에게 간 건강과 피로회복에 좋은 제품을 비교해서 추천해 줘.",
+        "prod_detail_prompt": "'{product}' 제품을 상세히 설명해줘.",
+        "prod_recommend_prompt": "'{product}' 제품을 추천하며 상세하게 설명해줘.",
+        
         "chat_placeholder": "바이오에게 질문하세요 (예: 관절에 좋은 영양제 추천해줘)...",
-        "kakao_inquiry": "제휴 & 카톡 문의: mark5548", "tour_inquiry": "✈️ 오늘은 시드니 어디로 여행을 갈까?",
+        "kakao_inquiry": "제휴 & 카톡 문의: mark5548", 
+        "tour_inquiry": "✈️ 오늘은 시드니 어디로 여행을 갈까?",
+        "tour_link": "👉 **[MIN Tour & Travel 시드니 투어 문의](https://www.instagram.com/mintourtravel)**",
         "close_btn": "❌ 닫기 (AI 상담으로 돌아가기)", "ai_listen_btn": "🔍 AI 설명 듣기",
         "reels_title": "📸 매장 소식 (Store Reels)", "reels_info": "💡 폴더 안에 `.mp4` 영상을 넣으시면 자동 재생됩니다.",
         "ai_loading": "🤖 AI가 답변을 생성 중입니다...",
@@ -169,9 +171,18 @@ UI_TEXT = {
         "trs_tip": "💡 **Smart Tip:** Before heading to the airport, download the **'TRS App'** on your smartphone. Enter your invoice details in advance for a much faster dedicated queue!",
         "md_recommend": "👑 This Week's Top Picks", "top5": "🔥 Real-time Store TOP 5", "catalog": "📁 Product Catalog",
         "reset_chat": "🔄 Reset Chat", "quick_search": "🔍 Quick Theme Search:",
-        "theme1": "#✈️ Must-buy Gifts for Home", "theme2": "#👨‍👩‍👧‍👦 Gifts for Parents (50s-60s)", "theme3": "#💻 For Fatigued Workers",
+        
+        "theme1_btn": "#✈️ Must-buy Gifts for Home", "theme2_btn": "#👨‍👩‍👧‍👦 Gifts for Parents (50s-60s)", "theme3_btn": "#💻 For Fatigued Workers",
+        "theme1_prompt": "Recommend the best products to gift family and friends when returning from Australia.",
+        "theme2_prompt": "Recommend gift sets good for joint and eye health for parents in their 50s and 60s.",
+        "theme3_prompt": "Compare and recommend products good for liver health and fatigue recovery for office workers who work overtime.",
+        "prod_detail_prompt": "Please explain the product '{product}' in detail.",
+        "prod_recommend_prompt": "Recommend and explain the product '{product}' in detail.",
+        
         "chat_placeholder": "Ask Bio anything (e.g., Recommend joint health products)...",
-        "kakao_inquiry": "Partnership & Kakao Inquiry: mark5548", "tour_inquiry": "✈️ Where to travel in Sydney today?",
+        "kakao_inquiry": "Partnership & Kakao Inquiry: mark5548", 
+        "tour_inquiry": "✈️ Where to travel in Sydney today?",
+        "tour_link": "👉 **[MIN Tour & Travel Sydney Tour Inquiry](https://www.instagram.com/mintourtravel)**",
         "close_btn": "❌ Close (Back to AI Chat)", "ai_listen_btn": "🔍 Listen to AI Explanation",
         "reels_title": "📸 Store Reels", "reels_info": "💡 Put `.mp4` videos in the folder to auto-play.",
         "ai_loading": "🤖 AI is generating a response...",
@@ -197,9 +208,18 @@ UI_TEXT["CN"].update({
     "trs_tip": "💡 **温馨提示:** 去机场前，请在手机上下载 **'TRS App'** 并提前输入收据信息。您可以在机场使用专用快速通道，秒速退税！",
     "md_recommend": "👑 店长本周强烈推荐", "top5": "🔥 实时热卖 TOP 5", "catalog": "📁 产品目录",
     "reset_chat": "🔄 重置对话", "quick_search": "🔍 快捷主题搜索：",
-    "theme1": "#✈️ 澳洲必买回国礼物", "theme2": "#👨‍👩‍👧‍👦 送给父母的健康礼盒", "theme3": "#💻 缓解上班族疲劳推荐",
+    
+    "theme1_btn": "#✈️ 澳洲必买回国礼物", "theme2_btn": "#👨‍👩‍👧‍👦 送给父母的健康礼盒", "theme3_btn": "#💻 缓解上班族疲劳推荐",
+    "theme1_prompt": "推荐回国送给亲朋好友的最佳澳洲伴手礼。",
+    "theme2_prompt": "推荐适合50-60岁父母关节和眼睛健康的孝心礼盒。",
+    "theme3_prompt": "为经常熬夜加班的上班族比较并推荐有助于肝脏健康和缓解疲劳的产品。",
+    "prod_detail_prompt": "请详细说明一下'{product}'这款产品。",
+    "prod_recommend_prompt": "推荐并详细说明一下'{product}'这款产品。",
+    
     "chat_placeholder": "向Bio提问（例如：推荐关节保健品）...",
-    "kakao_inquiry": "合作与 Kakao 咨询: mark5548", "tour_inquiry": "✈️ 今天去悉尼哪里玩？",
+    "kakao_inquiry": "合作与 Kakao 咨询: mark5548", 
+    "tour_inquiry": "✈️ 今天去悉尼哪里玩？",
+    "tour_link": "👉 **[MIN Tour & Travel 悉尼旅游咨询](https://www.instagram.com/mintourtravel)**",
     "close_btn": "❌ 关闭 (返回AI咨询)", "ai_listen_btn": "🔍 听取AI讲解",
     "reels_title": "📸 门店动态 (Store Reels)", "reels_info": "💡 将 `.mp4` 视频放入文件夹即可自动播放。",
     "ai_loading": "🤖 AI 正在生成回答...",
@@ -224,9 +244,18 @@ UI_TEXT["JP"].update({
     "trs_tip": "💡 **スマートなヒント:** 空港に向かう前に、スマートフォンに **'TRSアプリ'** をダウンロードし、レシート情報を事前に入力しておいてください！専用レーンでスムーズに還付手続きができます。",
     "md_recommend": "👑 今週の店長おすすめ", "top5": "🔥 リアルタイム売上 TOP 5", "catalog": "📁 製品カタログ",
     "reset_chat": "🔄 対話リセット", "quick_search": "🔍 クイックテーマ検索:",
-    "theme1": "#✈️ 豪州帰国時の必須ギフト", "theme2": "#👨‍👩‍👧‍👦 両親への健康ギフト", "theme3": "#💻 慢性疲労の会社員向け",
+    
+    "theme1_btn": "#✈️ 豪州帰国時の必須ギフト", "theme2_btn": "#👨‍👩‍👧‍👦 両親への健康ギフト", "theme3_btn": "#💻 慢性疲労の会社員向け",
+    "theme1_prompt": "オーストラリアからの帰国時に家族や友人に贈るのに最適な製品をお勧めしてください。",
+    "theme2_prompt": "50代〜60代の両親の関節や目の健康に良いギフトセットをお勧めしてください。",
+    "theme3_prompt": "毎日残業して疲れている会社員のために、肝臓の健康や疲労回復に良い製品を比較してお勧めしてください。",
+    "prod_detail_prompt": "'{product}' 製品について詳細に説明してください。",
+    "prod_recommend_prompt": "'{product}' 製品を推薦し、詳細に説明してください。",
+    
     "chat_placeholder": "Bioに質問する（例：関節の製品を比較して）...",
-    "kakao_inquiry": "提携およびカカオトークのお問い合わせ: mark5548", "tour_inquiry": "✈️ 今日はシドニーのどこへ旅行に行こうか？",
+    "kakao_inquiry": "提携およびカカオトークのお問い合わせ: mark5548", 
+    "tour_inquiry": "✈️ 今日はシドニーのどこへ旅行に行こうか？",
+    "tour_link": "👉 **[MIN Tour & Travel シドニーツアーのお問い合わせ](https://www.instagram.com/mintourtravel)**",
     "close_btn": "❌ 閉じる (AI相談に戻る)", "ai_listen_btn": "🔍 AIの説明を聞く",
     "reels_title": "📸 店舗ニュース (Store Reels)", "reels_info": "💡 フォルダ内に `.mp4` 動画を入れると自動再生されます。",
     "ai_loading": "🤖 AIが回答を生成中です...",
@@ -234,10 +263,10 @@ UI_TEXT["JP"].update({
     "float2": "1店舗で$300以上のお買い上げで<br>空港免税(9%)の特典をお見逃しなく！✈️",
     "float3": "左側のサイドバーのカテゴリボタンを押して<br>カテゴリ別の製品をご覧ください 👆",
     "float4": "目の健康、関節、疲労回復など<br>症状にぴったりの製品をおすすめします！🍀",
-    "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비타민_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
+    "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비マスター_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
 })
 
-# 5. API 설정 (2026년 기준 최신 gemini-3.6-flash 적용)
+# 5. API 설정 (2026년 기준 최신 gemini-3.6-flash 적용 완료)
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
@@ -290,7 +319,7 @@ def load_product_data():
 
 categories_db, products_db = load_product_data()
 
-# 음성 재생
+# 음성 재생 (언어 코드 연동 확인 완료)
 async def generate_audio(text, lang_choice):
     voice = 'ko-KR-SunHiNeural'
     if lang_choice == 'GB': voice = 'en-US-AriaNeural'
@@ -334,17 +363,18 @@ with st.sidebar:
         </style>
         """, unsafe_allow_html=True)
 
-    # 👑 사장님 강력 추천 랜덤 로테이션 
+    # 👑 사장님 강력 추천 (프롬프트 언어 연동)
     st.markdown(f'<div style="background: linear-gradient(135deg, #005A32, #2E7D32); color: white; padding: 12px; border-radius: 10px 10px 0 0; text-align: center; font-size: 1.05rem; font-weight: bold; margin-bottom: 0px;">{t["md_recommend"]}</div>', unsafe_allow_html=True)
-    st.button(f"✨ {st.session_state.current_md_picks[0]}", on_click=trigger_ai_consultation, args=(f"'{st.session_state.current_md_picks[0]}' 제품을 상세히 설명해줘.", None), use_container_width=True, key="md_btn_1")
-    st.button(f"✨ {st.session_state.current_md_picks[1]}", on_click=trigger_ai_consultation, args=(f"'{st.session_state.current_md_picks[1]}' 제품을 상세히 설명해줘.", None), use_container_width=True, key="md_btn_2")
+    st.button(f"✨ {st.session_state.current_md_picks[0]}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", st.session_state.current_md_picks[0]), None), use_container_width=True, key="md_btn_1")
+    st.button(f"✨ {st.session_state.current_md_picks[1]}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", st.session_state.current_md_picks[1]), None), use_container_width=True, key="md_btn_2")
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # 🔥 실시간 매장 TOP 5 (프롬프트 언어 연동)
     st.markdown(f"### {t['top5']}")
     top5_items = ["마누카꿀 MGO 850+", "초록입홍합 21000", "유칼립투스 프로폴리스", "아이젠 눈건강", "알티지 오메가3"]
     medals = ["🥇", "🥈", "🥉", "🏅", "🏅"]
     for idx, top_name in enumerate(top5_items):
-        st.button(f"{medals[idx]} {top_name}", key=f"top_{idx}", on_click=trigger_ai_consultation, args=(f"'{top_name}' 제품을 추천하며 상세하게 설명해줘.", None), use_container_width=True)
+        st.button(f"{medals[idx]} {top_name}", key=f"top_{idx}", on_click=trigger_ai_consultation, args=(t["prod_recommend_prompt"].replace("{product}", top_name), None), use_container_width=True)
 
     st.markdown(f"### {t['catalog']}")
     cat_keys = list(categories_db.keys())
@@ -360,6 +390,7 @@ with st.sidebar:
     손님이 비교를 요청하면 마크다운 표(Table) 형식으로 정리해라.
     {t['ai_lang_cmd']}
     """
+    # 2026년 기준 3.6-flash 모델
     model = genai.GenerativeModel(model_name='gemini-3.6-flash', system_instruction=system_instruction)
 
     st.divider()
@@ -372,8 +403,10 @@ with st.sidebar:
         st.markdown(f'<div style="text-align: center; margin-top: 5px;"><img src="{qr_img_src}" style="width: 40%; border-radius: 8px;"></div>', unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
+    
+    # 투어 문의 완벽 번역 연동
     st.markdown(f"**{t['tour_inquiry']}**")
-    st.markdown("👉 **[MIN Tour & Travel 시드니 투어 문의](https://www.instagram.com/mintourtravel)**")
+    st.markdown(t["tour_link"])
 
 
 # 언어팩이 적용된 다국어 플로팅 UI 주입
@@ -421,7 +454,8 @@ with tab1:
                         
                         st.markdown(f'<span class="product-name">{p_name}</span>', unsafe_allow_html=True)
                         st.caption(f"{p_eff[:50]}..." if len(p_eff) > 50 else p_eff)
-                        st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{idx}", on_click=trigger_ai_consultation, args=(f"'{p_name}' 상세하게 설명해줘.", img_path), use_container_width=True)
+                        # 카탈로그 버튼도 프롬프트 언어 연동 완료
+                        st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{idx}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", p_name), img_path), use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.button(t["close_btn"], on_click=set_category, args=(None,), use_container_width=True)
@@ -437,9 +471,11 @@ with tab1:
 
     st.markdown(f"**{t['quick_search']}**")
     h_col1, h_col2, h_col3 = st.columns(3)
-    if h_col1.button(t["theme1"], use_container_width=True): trigger_ai_consultation("호주 귀국 시 가족과 지인들에게 선물하기 가장 좋은 베스트 제품들을 추천해 줘.", None)
-    if h_col2.button(t["theme2"], use_container_width=True): trigger_ai_consultation("50대~60대 부모님 관절과 눈 건강에 좋은 효도 선물 세트를 추천해 줘.", None)
-    if h_col3.button(t["theme3"], use_container_width=True): trigger_ai_consultation("매일 야근하고 피곤한 직장인에게 간 건강과 피로회복에 좋은 제품을 비교해서 추천해 줘.", None)
+    
+    # 🔍 빠른 테마 검색 버튼 (보여지는 텍스트와 전송되는 프롬프트를 각국 언어로 매칭)
+    if h_col1.button(t["theme1_btn"], use_container_width=True): trigger_ai_consultation(t["theme1_prompt"], None)
+    if h_col2.button(t["theme2_btn"], use_container_width=True): trigger_ai_consultation(t["theme2_prompt"], None)
+    if h_col3.button(t["theme3_btn"], use_container_width=True): trigger_ai_consultation(t["theme3_prompt"], None)
 
     st.markdown("<br>", unsafe_allow_html=True)
     user_input = st.chat_input(t["chat_placeholder"])

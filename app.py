@@ -80,7 +80,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# 🚀 다국어 지원 및 자동 초기화 기능이 추가된 무인 대기화면
+# 🚀 다국어 대기화면 및 자동 초기화
 components.html("""
 <div id="screensaver" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,90,50,0.98); z-index:999999; flex-direction:column; justify-content:center; align-items:center; cursor:pointer;">
     <h1 style="color:white; font-size:5rem; font-weight:900; margin-bottom:20px; text-align:center;">AGH GREENHEALTH BIO</h1>
@@ -118,7 +118,7 @@ components.html("""
 </script>
 """, height=0)
 
-# --- 4. 4개 국어 완벽 딕셔너리 (프롬프트/명령어 연동 포함) ---
+# --- 4. 4개 국어 딕셔너리 ---
 UI_TEXT = {
     "KR": {
         "title": "🍀 AGH GREENHEALTH AI : Bio",
@@ -135,9 +135,7 @@ UI_TEXT = {
         "md_recommend": "👑 이번 주 사장님 강력 추천", "top5": "🔥 실시간 매장 TOP 5", "catalog": "📁 제품 카탈로그",
         "reset_chat": "🔄 대화 초기화", "quick_search": "🔍 빠른 테마 검색:",
         
-        # 버튼 텍스트
         "theme1_btn": "#✈️ 호주 귀국 필수 선물", "theme2_btn": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3_btn": "#💻 만성피로 직장인 추천",
-        # 🚨 AI에게 전달되는 실제 백그라운드 프롬프트 명령 (언어별 매칭 완료)
         "theme1_prompt": "호주 귀국 시 가족과 지인들에게 선물하기 가장 좋은 베스트 제품들을 추천해 줘.",
         "theme2_prompt": "50대~60대 부모님 관절과 눈 건강에 좋은 효도 선물 세트를 추천해 줘.",
         "theme3_prompt": "매일 야근하고 피곤한 직장인에게 간 건강과 피로회복에 좋은 제품을 비교해서 추천해 줘.",
@@ -263,13 +261,27 @@ UI_TEXT["JP"].update({
     "float2": "1店舗で$300以上のお買い上げで<br>空港免税(9%)の特典をお見逃しなく！✈️",
     "float3": "左側のサイドバーのカテゴリボタンを押して<br>カテゴリ別の製品をご覧ください 👆",
     "float4": "目の健康、関節、疲労回復など<br>症状にぴったりの製品をおすすめします！🍀",
-    "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비マスター_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
+    "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비타민_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
 })
 
 # 5. API 설정 (2026년 기준 최신 gemini-3.6-flash 적용 완료)
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
+
+# 🛠️ AI 실시간 번역 안전 헬퍼 함수 (캐싱 및 오류 방지 폴백 탑재)
+@st.cache_data
+def translate_product_efficacy(text, target_lang):
+    if not text or target_lang == 'KR':
+        return text
+    try:
+        lang_name = {"GB": "English", "CN": "Simplified Chinese", "JP": "Japanese"}.get(target_lang, "English")
+        prompt = f"Translate the following health supplement description into natural, professional {lang_name}. Keep it concise (under 50 words) and suitable for a kiosk product card. Do not add conversational filler, just give the direct translation:\n\n{text}"
+        trans_model = genai.GenerativeModel(model_name='gemini-3.6-flash')
+        res = trans_model.generate_content(prompt)
+        return res.text.strip()
+    except Exception:
+        return text # 에러 발생 시 원본 텍스트를 그대로 보여주어 무조건 시스템 안정성 유지
 
 # --- 6. 상태 관리 ---
 if "messages" not in st.session_state: st.session_state.messages = []
@@ -319,7 +331,7 @@ def load_product_data():
 
 categories_db, products_db = load_product_data()
 
-# 음성 재생 (언어 코드 연동 확인 완료)
+# 음성 재생
 async def generate_audio(text, lang_choice):
     voice = 'ko-KR-SunHiNeural'
     if lang_choice == 'GB': voice = 'en-US-AriaNeural'
@@ -363,13 +375,11 @@ with st.sidebar:
         </style>
         """, unsafe_allow_html=True)
 
-    # 👑 사장님 강력 추천 (프롬프트 언어 연동)
     st.markdown(f'<div style="background: linear-gradient(135deg, #005A32, #2E7D32); color: white; padding: 12px; border-radius: 10px 10px 0 0; text-align: center; font-size: 1.05rem; font-weight: bold; margin-bottom: 0px;">{t["md_recommend"]}</div>', unsafe_allow_html=True)
     st.button(f"✨ {st.session_state.current_md_picks[0]}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", st.session_state.current_md_picks[0]), None), use_container_width=True, key="md_btn_1")
     st.button(f"✨ {st.session_state.current_md_picks[1]}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", st.session_state.current_md_picks[1]), None), use_container_width=True, key="md_btn_2")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # 🔥 실시간 매장 TOP 5 (프롬프트 언어 연동)
     st.markdown(f"### {t['top5']}")
     top5_items = ["마누카꿀 MGO 850+", "초록입홍합 21000", "유칼립투스 프로폴리스", "아이젠 눈건강", "알티지 오메가3"]
     medals = ["🥇", "🥈", "🥉", "🏅", "🏅"]
@@ -390,7 +400,6 @@ with st.sidebar:
     손님이 비교를 요청하면 마크다운 표(Table) 형식으로 정리해라.
     {t['ai_lang_cmd']}
     """
-    # 2026년 기준 3.6-flash 모델
     model = genai.GenerativeModel(model_name='gemini-3.6-flash', system_instruction=system_instruction)
 
     st.divider()
@@ -403,13 +412,11 @@ with st.sidebar:
         st.markdown(f'<div style="text-align: center; margin-top: 5px;"><img src="{qr_img_src}" style="width: 40%; border-radius: 8px;"></div>', unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    
-    # 투어 문의 완벽 번역 연동
     st.markdown(f"**{t['tour_inquiry']}**")
     st.markdown(t["tour_link"])
 
 
-# 언어팩이 적용된 다국어 플로팅 UI 주입
+# 플로팅 UI
 st.markdown(f"""
 <div class="floating-container">
     <div class="floating-bubble">
@@ -443,6 +450,9 @@ with tab1:
                 p_img = prod.get("image_file", "") 
                 p_eff = prod.get("efficacy", "")
                 
+                # 🌟 AI 실시간 번역 적용 (에러 방지 폴백 내장)
+                display_eff = translate_product_efficacy(p_eff, lang_code)
+                
                 with cols[idx % 3]:
                     with st.container(border=True):
                         img_path = f"images/{p_img}"
@@ -453,8 +463,7 @@ with tab1:
                             st.image("https://via.placeholder.com/300x200?text=No+Image", use_container_width=True)
                         
                         st.markdown(f'<span class="product-name">{p_name}</span>', unsafe_allow_html=True)
-                        st.caption(f"{p_eff[:50]}..." if len(p_eff) > 50 else p_eff)
-                        # 카탈로그 버튼도 프롬프트 언어 연동 완료
+                        st.caption(f"{display_eff[:50]}..." if len(display_eff) > 50 else display_eff)
                         st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{idx}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", p_name), img_path), use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -471,8 +480,6 @@ with tab1:
 
     st.markdown(f"**{t['quick_search']}**")
     h_col1, h_col2, h_col3 = st.columns(3)
-    
-    # 🔍 빠른 테마 검색 버튼 (보여지는 텍스트와 전송되는 프롬프트를 각국 언어로 매칭)
     if h_col1.button(t["theme1_btn"], use_container_width=True): trigger_ai_consultation(t["theme1_prompt"], None)
     if h_col2.button(t["theme2_btn"], use_container_width=True): trigger_ai_consultation(t["theme2_prompt"], None)
     if h_col3.button(t["theme3_btn"], use_container_width=True): trigger_ai_consultation(t["theme3_prompt"], None)

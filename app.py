@@ -80,21 +80,44 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# 🚀 무인 대기화면(스크린세이버) 3분 미동작 시 작동
+# 🚀 다국어 지원 및 자동 초기화 기능이 추가된 무인 대기화면(스크린세이버)
 components.html("""
 <div id="screensaver" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,90,50,0.98); z-index:999999; flex-direction:column; justify-content:center; align-items:center; cursor:pointer;">
     <h1 style="color:white; font-size:5rem; font-weight:900; margin-bottom:20px; text-align:center;">AGH GREENHEALTH BIO</h1>
-    <h2 style="color:#A5D6A7; font-size:2.5rem; text-align:center; animation: blink 2s infinite;">👆 화면을 터치해서 AI 맞춤 상담을 시작하세요</h2>
+    <h2 id="ss-text" style="color:#A5D6A7; font-size:2.5rem; text-align:center; animation: blink 2s infinite;">👆 화면을 터치해서 AI 맞춤 상담을 시작하세요</h2>
 </div>
 <style>@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }</style>
 <script>
+    // 4개 국어 롤링 문구
+    const texts = [
+        "👆 화면을 터치해서 AI 맞춤 상담을 시작하세요",
+        "👆 Touch the screen to start AI consultation",
+        "👆 点击屏幕开始AI智能咨询",
+        "👆 画面をタッチしてAI相談を開始してください"
+    ];
+    let textIdx = 0;
+    setInterval(() => {
+        textIdx = (textIdx + 1) % texts.length;
+        let el = document.getElementById('ss-text');
+        if(el) el.innerText = texts[textIdx];
+    }, 3000); // 3초마다 언어 변경
+
     let timeout;
+    let resetTimeout;
     function resetTimer() {
         document.getElementById('screensaver').style.display = 'none';
         clearTimeout(timeout);
+        clearTimeout(resetTimeout);
+        
+        // 1. 3분(180,000ms) 미조작 시 스크린세이버 작동
         timeout = setTimeout(() => {
             document.getElementById('screensaver').style.display = 'flex';
         }, 180000);
+        
+        // 2. 5분(300,000ms) 미조작 시 화면 완전 새로고침(이전 손님 대화 내역 자동 초기화)
+        resetTimeout = setTimeout(() => {
+            window.parent.location.reload();
+        }, 300000);
     }
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
@@ -121,7 +144,7 @@ UI_TEXT = {
         "md_recommend": "👑 이번 주 사장님 강력 추천", "top5": "🔥 실시간 매장 TOP 5", "catalog": "📁 제품 카탈로그",
         "reset_chat": "🔄 대화 초기화", "quick_search": "🔍 빠른 테마 검색:",
         "theme1": "#✈️ 호주 귀국 필수 선물", "theme2": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3": "#💻 만성피로 직장인 추천",
-        "chat_placeholder": "바이오에게 질문하세요 (예: 뼈 관절 제품 비교해줘)...",
+        "chat_placeholder": "바이오에게 질문하세요 (예: 관절에 좋은 영양제 추천해줘)...",
         "kakao_inquiry": "제휴 & 카톡 문의: mark5548", "tour_inquiry": "✈️ 오늘은 시드니 어디로 여행을 갈까?",
         "close_btn": "❌ 닫기 (AI 상담으로 돌아가기)", "ai_listen_btn": "🔍 AI 설명 듣기",
         "reels_title": "📸 매장 소식 (Store Reels)", "reels_info": "💡 폴더 안에 `.mp4` 영상을 넣으시면 자동 재생됩니다.",

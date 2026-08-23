@@ -104,7 +104,7 @@ components.html("""
 </script>
 """, height=0)
 
-# --- 4. 다국어 완벽 번역 UI 딕셔너리 ---
+# --- 4. 4개 국어 완벽 딕셔너리 ---
 UI_TEXT = {
     "KR": {
         "title": "🍀 AGH GREENHEALTH AI : Bio",
@@ -125,6 +125,7 @@ UI_TEXT = {
         "kakao_inquiry": "제휴 & 카톡 문의: mark5548", "tour_inquiry": "✈️ 오늘은 시드니 어디로 여행을 갈까?",
         "close_btn": "❌ 닫기 (AI 상담으로 돌아가기)", "ai_listen_btn": "🔍 AI 설명 듣기",
         "reels_title": "📸 매장 소식 (Store Reels)", "reels_info": "💡 폴더 안에 `.mp4` 영상을 넣으시면 자동 재생됩니다.",
+        "ai_loading": "🤖 AI가 답변을 생성 중입니다...",
         "float1": "원하시는 제품을 찾기 힘드신가요?<br>카운터에 계신 사장님을 편하게 불러주세요! 🙋‍♂️",
         "float2": "단일 매장 $300 이상 구매 시<br>공항 텍스 리펀(9%) 혜택을 놓치지 마세요! ✈️",
         "float3": "좌측 사이드바의 카테고리 버튼을 눌러<br>품목별 제품들을 구경해 보세요 👆",
@@ -150,6 +151,7 @@ UI_TEXT = {
         "kakao_inquiry": "Partnership & Kakao Inquiry: mark5548", "tour_inquiry": "✈️ Where to travel in Sydney today?",
         "close_btn": "❌ Close (Back to AI Chat)", "ai_listen_btn": "🔍 Listen to AI Explanation",
         "reels_title": "📸 Store Reels", "reels_info": "💡 Put `.mp4` videos in the folder to auto-play.",
+        "ai_loading": "🤖 AI is generating a response...",
         "float1": "Having trouble finding a product?<br>Please feel free to ask our manager! 🙋‍♂️",
         "float2": "Don't miss the 9% Airport Tax Refund<br>when you spend over $300 in-store! ✈️",
         "float3": "Click the category buttons on the left<br>to explore our products 👆",
@@ -162,9 +164,13 @@ UI_TEXT["CN"] = UI_TEXT["GB"].copy()
 UI_TEXT["CN"].update({
     "greeting": "您好！我是AGH的智能助手 **Bio**。随时问我吧！💚", 
     "ai_lang_cmd": "(重要：请将所有回答完全翻译成中文。绝对不要使用HTML，只使用Markdown格式。)",
-    "ship_title": "📦 韩国直邮指南",
+    "tab1": "💬 AI 智能咨询", "tab2": "📦 韩国直邮与退税指南", "tab3": "📱 门店动态 (Reels)",
+    "elderly_mode": "👵 老年放大字体模式",
+    "ship_title": "📦 韩国直邮详细指南",
+    "ship_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 配送基本信息</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>发货时间:</b> 每周二 / 周四下午 1点统一发货</li><li><b>配送时效:</b> 工作日 5~7天</li><li><b>免税额度:</b> 保健品每人每次<b>最多6瓶</b> (其他品类最多5kg)</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 清关必备材料</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li>收件人真实姓名及韩国手机号</li><li><b>个人清关高有编号 (PCCC)</b> (必须与收件人姓名一致)</li><li>准确的韩国收货地址</li></ul></div>",
     "ship_warn": "⚠️ **注意:** 液体（如麦卢卡蜂蜜，蜂胶液）严禁随身携带上飞机。请务必将它们放入**托运行李**中！",
-    "trs_title": "💰 TRS (机场退税) 完美指南",
+    "trs_title": "💰 机场退税 (TRS) 完美指南",
+    "trs_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 退税基本条件</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>消费金额:</b> AGH门店单笔消费满 <b>$300以上</b> 即可退税</li><li><b>退税比例:</b> 消费金额的约 <b>9%</b></li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 机场所需物品及地点</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>携带物品:</b> 门店纸质收据 (Tax Invoice)、所购商品实物、护照、登机牌</li><li><b>办理地点:</b> 悉尼机场过安检后免税区 (Airside) 内的 <b>TRS 退税窗口</b></li></ul></div>",
     "trs_tip": "💡 **温馨提示:** 去机场前，请在手机上下载 **'TRS App'** 并提前输入收据信息。您可以在机场使用专用快速通道，秒速退税！",
     "md_recommend": "👑 店长本周强烈推荐", "top5": "🔥 实时热卖 TOP 5", "catalog": "📁 产品目录",
     "reset_chat": "🔄 重置对话", "quick_search": "🔍 快捷主题搜索：",
@@ -173,6 +179,7 @@ UI_TEXT["CN"].update({
     "kakao_inquiry": "合作与 Kakao 咨询: mark5548", "tour_inquiry": "✈️ 今天去悉尼哪里玩？",
     "close_btn": "❌ 关闭 (返回AI咨询)", "ai_listen_btn": "🔍 听取AI讲解",
     "reels_title": "📸 门店动态 (Store Reels)", "reels_info": "💡 将 `.mp4` 视频放入文件夹即可自动播放。",
+    "ai_loading": "🤖 AI 正在生成回答...",
     "float1": "找不到您想要的型号吗？<br>请随时呼叫柜台老板！🙋‍♂️",
     "float2": "单笔消费满$300<br>千万别错过机场退税(9%)的优惠！✈️",
     "float3": "点击左侧边栏的分类按钮<br>按类别浏览产品 👆",
@@ -184,9 +191,13 @@ UI_TEXT["JP"] = UI_TEXT["GB"].copy()
 UI_TEXT["JP"].update({
     "greeting": "こんにちは！AGHのスマートアシスタント、**Bio**です。何でもお尋ねください！💚", 
     "ai_lang_cmd": "(重要：すべての回答を日本語に翻訳してください。HTMLは使用せず、マークダウンのみを使用してください。)",
+    "tab1": "💬 AI カスタム相談", "tab2": "📦 韓国配送 & 免税ガイド", "tab3": "📱 店舗ニュース (Reels)",
+    "elderly_mode": "👵 シニア向け拡大文字モード",
     "ship_title": "📦 韓国配送（宅配）詳細案内",
+    "ship_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 配送基本情報</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>発送日程:</b> 毎週火曜日・木曜日 午後1時に一括発送</li><li><b>配送期間:</b> 営業日基準 5〜7日所要</li><li><b>免税限度:</b> 健康機能食品 1人1回<b>最大6個</b> (その他品目は最大5kg)</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 通関必須の準備物</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li>受取人の実名および韓国の携帯電話番号</li><li><b>個人通関固有符号</b> (受取人名義と必ず一致している必要があります)</li><li>正確な道路名住所</li></ul></div>",
     "ship_warn": "⚠️ **注意:** 液体類（マヌカハニー、プロポリスリキッド等）は機内持ち込みが厳しく禁止されています。必ず**預け入れ荷物**に入れてください！",
     "trs_title": "💰 TRS (空港税金還付) 完璧ガイド",
+    "trs_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 還付基本条件</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>購入金額:</b> AGH店舗での単一決済額 <b>$300以上</b> の場合に還付可能</li><li><b>還付率:</b> 決済金額の約 <b>9%</b> 還付</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 空港必須持参物および場所</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>持ち物:</b> 店舗実物レシート (Tax Invoice)、購入した製品の実物、パスポート、搭乗券</li><li><b>場所:</b> シドニー空港出国審査（セキュリティチェック）通過後の免税エリア（Airside）内 <b>TRSカウンター</b></li></ul></div>",
     "trs_tip": "💡 **スマートなヒント:** 空港に向かう前に、スマートフォンに **'TRSアプリ'** をダウンロードし、レシート情報を事前に入力しておいてください！専用レーンでスムーズに還付手続きができます。",
     "md_recommend": "👑 今週の店長おすすめ", "top5": "🔥 リアルタイム売上 TOP 5", "catalog": "📁 製品カタログ",
     "reset_chat": "🔄 対話リセット", "quick_search": "🔍 クイックテーマ検索:",
@@ -195,6 +206,7 @@ UI_TEXT["JP"].update({
     "kakao_inquiry": "提携およびカカオトークのお問い合わせ: mark5548", "tour_inquiry": "✈️ 今日はシドニーのどこへ旅行に行こうか？",
     "close_btn": "❌ 閉じる (AI相談に戻る)", "ai_listen_btn": "🔍 AIの説明を聞く",
     "reels_title": "📸 店舗ニュース (Store Reels)", "reels_info": "💡 フォルダ内に `.mp4` 動画を入れると自動再生されます。",
+    "ai_loading": "🤖 AIが回答を生成中です...",
     "float1": "お探しの製品が見つかりませんか？<br>カウンターの店長をお気軽にお呼びください！🙋‍♂️",
     "float2": "1店舗で$300以上のお買い上げで<br>空港免税(9%)の特典をお見逃しなく！✈️",
     "float3": "左側のサイドバーのカテゴリボタンを押して<br>カテゴリ別の製品をご覧ください 👆",
@@ -202,7 +214,7 @@ UI_TEXT["JP"].update({
     "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비타민_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
 })
 
-# 5. API 설정
+# 5. API 설정 (2026년 기준 최신 gemini-3.6-flash 적용)
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
@@ -437,7 +449,7 @@ with tab1:
             if img_to_show and os.path.exists(img_to_show):
                 st.image(img_to_show, width=300)
                 
-            with st.spinner("AI가 답변을 생성 중입니다..."):
+            with st.spinner(t["ai_loading"]):
                 try:
                     chat = model.start_chat(history=history_for_gemini)
                     response = chat.send_message(injected_prompt)

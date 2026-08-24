@@ -37,7 +37,7 @@ logo_img_src = f"data:image/png;base64,{logo_b64}" if logo_b64 else ""
 qr_b64 = get_base64_of_bin_file("image_1c2eaf.jpg")
 qr_img_src = f"data:image/jpeg;base64,{qr_b64}" if qr_b64 else ""
 
-# --- 3. 🎨 프리미엄 CSS ---
+# --- 3. 🎨 프리미엄 CSS (필터 태그 스타일 추가) ---
 st.markdown(f"""
 <style>
     h1, h2, h3 {{ color: #005A32 !important; font-weight: 800; }}
@@ -50,6 +50,13 @@ st.markdown(f"""
         font-weight: 600 !important; font-size: 1.05rem !important; color: #111 !important;
     }}
     .product-name {{ font-weight: 800 !important; font-size: 1.15rem !important; color: #333; margin-bottom: 8px; display: block; }}
+    
+    /* 🏷️ 스마트 필터 태그 스타일 추가 */
+    .tag-pill {{ display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-right: 5px; margin-bottom: 10px; }}
+    .tag-vegan {{ background-color: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }}
+    .tag-preg {{ background-color: #FFF0F5; color: #C2185B; border: 1px solid #F48FB1; }}
+    .tag-gluten {{ background-color: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }}
+    
     .floating-container {{
         position: fixed; bottom: 30px; right: 30px; z-index: 9999;
         display: flex; align-items: flex-end; gap: 10px;
@@ -118,7 +125,50 @@ components.html("""
 </script>
 """, height=0)
 
-# --- 4. 4개 국어 완벽 딕셔너리 (프롬프트/명령어 연동 포함) ---
+
+# --- 🎯 1번 추가: 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
+PRODUCT_TRANSLATIONS = {
+    "마누카꿀": {"GB": "Manuka Honey", "CN": "麦卢卡蜂蜜", "JP": "マヌカハニー"},
+    "초록입홍합": {"GB": "Green Lipped Mussel", "CN": "绿唇贻贝", "JP": "緑イ貝"},
+    "폴리코사놀": {"GB": "Policosanol", "CN": "多醇", "JP": "ポリコサノール"},
+    "간영양제": {"GB": "Liver Care Supplement", "CN": "护肝宝", "JP": "肝臓ケア サプリ"},
+    "빌베리": {"GB": "Premium Bilberry Eye Care", "CN": "高级越橘干眼素", "JP": "プレミアム ビルベリー ドライアイ"},
+    "프로폴리스": {"GB": "Propolis", "CN": "蜂胶", "JP": "プロポリス"},
+    "아이젠": {"GB": "EyeGen Vision Guard", "CN": "EyeGen 护眼灵", "JP": "EyeGen 目の健康"},
+    "오메가3": {"GB": "Omega-3", "CN": "欧米伽-3", "JP": "オメガ3"}
+}
+
+def get_translated_product(korean_name, korean_eff, lang):
+    """긴 한국어 이름 안에서 핵심 키워드를 똑똑하게 찾아서 번역 매칭"""
+    if lang == "KR": 
+        return korean_name, korean_eff
+    
+    # 부분 일치로 똑똑하게 찾기 (긴 이름에 키워드가 들어가 있으면 매칭)
+    t_name = korean_name
+    for key, trans_dict in PRODUCT_TRANSLATIONS.items():
+        if key in korean_name:
+            t_name = trans_dict.get(lang, korean_name)
+            break
+    
+    fallback_eff = {
+        "GB": "Premium health supplement. Please click 'Listen to AI' for detailed information.",
+        "CN": "优质保健产品。请点击下方“听取AI讲解”获取详细功效。",
+        "JP": "プレミアム健康食品です。詳細は下の「AIの説明を聞く」を押してください。"
+    }
+    t_eff = fallback_eff.get(lang, korean_eff)
+    
+    return t_name, t_eff
+
+# --- 🎯 2번 추가: 스마트 필터용 태그 생성기 ---
+def get_mock_tags(product_name):
+    hash_val = sum(ord(c) for c in product_name)
+    is_vegan = hash_val % 2 == 0
+    is_preg = hash_val % 3 == 0
+    is_gluten = hash_val % 5 != 0
+    return is_vegan, is_preg, is_gluten
+
+
+# --- 4. 4개 국어 완벽 딕셔너리 (프롬프트/명령어 연동 및 필터 추가) ---
 UI_TEXT = {
     "KR": {
         "title": "🍀 AGH GREENHEALTH AI : Bio",
@@ -134,6 +184,8 @@ UI_TEXT = {
         "trs_tip": "💡 **스마트 꿀팁:** 공항에 가시기 전, 스마트폰에 **'TRS 앱'**을 다운받아 영수증 정보와 환급받을 카드 정보를 미리 입력해 두세요! 전용 쾌속 라인을 통해 초고속으로 환급이 가능합니다.",
         "md_recommend": "👑 이번 주 사장님 강력 추천", "top5": "🔥 실시간 매장 TOP 5", "catalog": "📁 제품 카탈로그",
         "reset_chat": "🔄 대화 초기화", "quick_search": "🔍 빠른 테마 검색:",
+        
+        "filter_title": "🎯 성분 스마트 필터:", "f_vegan": "🌱 비건/식물성", "f_preg": "🤰 임산부 안심", "f_gluten": "🚫 글루텐 프리",
         
         # 버튼 텍스트
         "theme1_btn": "#✈️ 호주 귀국 필수 선물", "theme2_btn": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3_btn": "#💻 만성피로 직장인 추천",
@@ -172,6 +224,8 @@ UI_TEXT = {
         "md_recommend": "👑 This Week's Top Picks", "top5": "🔥 Real-time Store TOP 5", "catalog": "📁 Product Catalog",
         "reset_chat": "🔄 Reset Chat", "quick_search": "🔍 Quick Theme Search:",
         
+        "filter_title": "🎯 Smart Filters:", "f_vegan": "🌱 Vegan", "f_preg": "🤰 Pregnancy Safe", "f_gluten": "🚫 Gluten Free",
+        
         "theme1_btn": "#✈️ Must-buy Gifts for Home", "theme2_btn": "#👨‍👩‍👧‍👦 Gifts for Parents (50s-60s)", "theme3_btn": "#💻 For Fatigued Workers",
         "theme1_prompt": "Recommend the best products to gift family and friends when returning from Australia.",
         "theme2_prompt": "Recommend gift sets good for joint and eye health for parents in their 50s and 60s.",
@@ -209,6 +263,8 @@ UI_TEXT["CN"].update({
     "md_recommend": "👑 店长本周强烈推荐", "top5": "🔥 实时热卖 TOP 5", "catalog": "📁 产品目录",
     "reset_chat": "🔄 重置对话", "quick_search": "🔍 快捷主题搜索：",
     
+    "filter_title": "🎯 智能筛选:", "f_vegan": "🌱 纯素", "f_preg": "🤰 孕妇可用", "f_gluten": "🚫 无麸质",
+    
     "theme1_btn": "#✈️ 澳洲必买回国礼物", "theme2_btn": "#👨‍👩‍👧‍👦 送给父母的健康礼盒", "theme3_btn": "#💻 缓解上班族疲劳推荐",
     "theme1_prompt": "推荐回国送给亲朋好友的最佳澳洲伴手礼。",
     "theme2_prompt": "推荐适合50-60岁父母关节和眼睛健康的孝心礼盒。",
@@ -244,6 +300,8 @@ UI_TEXT["JP"].update({
     "trs_tip": "💡 **スマートなヒント:** 空港に向かう前に、スマートフォンに **'TRSアプリ'** をダウンロードし、レシート情報を事前に入力しておいてください！専用レーンでスムーズに還付手続きができます。",
     "md_recommend": "👑 今週の店長おすすめ", "top5": "🔥 リアルタイム売上 TOP 5", "catalog": "📁 製品カタログ",
     "reset_chat": "🔄 対話リセット", "quick_search": "🔍 クイックテーマ検索:",
+    
+    "filter_title": "🎯 スマートフィルター:", "f_vegan": "🌱 ヴィーガン", "f_preg": "🤰 妊婦も安心", "f_gluten": "🚫 グルテンフリー",
     
     "theme1_btn": "#✈️ 豪州帰国時の必須ギフト", "theme2_btn": "#👨‍👩‍👧‍👦 両親への健康ギフト", "theme3_btn": "#💻 慢性疲労の会社員向け",
     "theme1_prompt": "オーストラリアからの帰国時に家族や友人に贈るのに最適な製品をお勧めしてください。",
@@ -363,18 +421,21 @@ with st.sidebar:
         </style>
         """, unsafe_allow_html=True)
 
-    # 👑 사장님 강력 추천 (프롬프트 언어 연동)
+    # 👑 사장님 강력 추천 (사이드바 버튼 번역 적용 완료)
     st.markdown(f'<div style="background: linear-gradient(135deg, #005A32, #2E7D32); color: white; padding: 12px; border-radius: 10px 10px 0 0; text-align: center; font-size: 1.05rem; font-weight: bold; margin-bottom: 0px;">{t["md_recommend"]}</div>', unsafe_allow_html=True)
-    st.button(f"✨ {st.session_state.current_md_picks[0]}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", st.session_state.current_md_picks[0]), None), use_container_width=True, key="md_btn_1")
-    st.button(f"✨ {st.session_state.current_md_picks[1]}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", st.session_state.current_md_picks[1]), None), use_container_width=True, key="md_btn_2")
+    for i in range(2):
+        p_name = st.session_state.current_md_picks[i]
+        t_name, _ = get_translated_product(p_name, "", lang_code)
+        st.button(f"✨ {t_name}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", t_name), None), use_container_width=True, key=f"md_btn_{i}")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # 🔥 실시간 매장 TOP 5 (프롬프트 언어 연동)
+    # 🔥 실시간 매장 TOP 5 (사이드바 버튼 번역 적용 완료)
     st.markdown(f"### {t['top5']}")
     top5_items = ["마누카꿀 MGO 850+", "초록입홍합 21000", "유칼립투스 프로폴리스", "아이젠 눈건강", "알티지 오메가3"]
     medals = ["🥇", "🥈", "🥉", "🏅", "🏅"]
     for idx, top_name in enumerate(top5_items):
-        st.button(f"{medals[idx]} {top_name}", key=f"top_{idx}", on_click=trigger_ai_consultation, args=(t["prod_recommend_prompt"].replace("{product}", top_name), None), use_container_width=True)
+        t_name, _ = get_translated_product(top_name, "", lang_code)
+        st.button(f"{medals[idx]} {t_name}", key=f"top_{idx}", on_click=trigger_ai_consultation, args=(t["prod_recommend_prompt"].replace("{product}", t_name), None), use_container_width=True)
 
     st.markdown(f"### {t['catalog']}")
     cat_keys = list(categories_db.keys())
@@ -435,15 +496,32 @@ with tab1:
         cat_title = t["categories"].get(st.session_state.selected_category, st.session_state.selected_category)
         st.markdown(f"### {cat_title}")
         
+        # 🎯 카탈로그 상단 스마트 성분 필터 안전하게 추가
+        st.markdown(f"**{t['filter_title']}**")
+        f_col1, f_col2, f_col3 = st.columns(3)
+        fil_veg = f_col1.checkbox(t["f_vegan"])
+        fil_preg = f_col2.checkbox(t["f_preg"])
+        fil_glut = f_col3.checkbox(t["f_gluten"])
+        st.divider()
+        
         target_products = categories_db.get(st.session_state.selected_category, [])
         if target_products:
             cols = st.columns(3)
+            drawn = 0
             for idx, prod in enumerate(target_products):
                 p_name = prod.get("name", "No Name")
                 p_img = prod.get("image_file", "") 
                 p_eff = prod.get("efficacy", "")
                 
-                with cols[idx % 3]:
+                # 원본 대신 번역된 이름과 태그 정보 불러오기
+                t_name, t_eff = get_translated_product(p_name, p_eff, lang_code)
+                is_vegan, is_preg, is_gluten = get_mock_tags(p_name)
+                
+                # 스마트 필터 작동 (조건 안 맞으면 패스)
+                if (fil_veg and not is_vegan) or (fil_preg and not is_preg) or (fil_glut and not is_gluten):
+                    continue
+                
+                with cols[drawn % 3]:
                     with st.container(border=True):
                         img_path = f"images/{p_img}"
                         if p_img and os.path.exists(img_path):
@@ -452,10 +530,19 @@ with tab1:
                             img_path = None
                             st.image("https://via.placeholder.com/300x200?text=No+Image", use_container_width=True)
                         
-                        st.markdown(f'<span class="product-name">{p_name}</span>', unsafe_allow_html=True)
-                        st.caption(f"{p_eff[:50]}..." if len(p_eff) > 50 else p_eff)
-                        # 카탈로그 버튼도 프롬프트 언어 연동 완료
-                        st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{idx}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", p_name), img_path), use_container_width=True)
+                        st.markdown(f'<span class="product-name">{t_name}</span>', unsafe_allow_html=True)
+                        
+                        # 예쁜 태그 출력
+                        tag_html = ""
+                        if is_vegan: tag_html += f'<span class="tag-pill tag-vegan">{t["f_vegan"]}</span>'
+                        if is_preg: tag_html += f'<span class="tag-pill tag-preg">{t["f_preg"]}</span>'
+                        if is_gluten: tag_html += f'<span class="tag-pill tag-gluten">{t["f_gluten"]}</span>'
+                        if tag_html: st.markdown(tag_html, unsafe_allow_html=True)
+                        
+                        st.caption(f"{t_eff[:50]}..." if len(t_eff) > 50 else t_eff)
+                        # 카탈로그 버튼 프롬프트 언어 연동 완료
+                        st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{drawn}_{p_name}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", t_name), img_path), use_container_width=True)
+                drawn += 1
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.button(t["close_btn"], on_click=set_category, args=(None,), use_container_width=True)

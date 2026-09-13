@@ -1,5 +1,5 @@
 import os
-import re  # 🚨 절대로 빠지면 안 되는 핵심 모듈 복구 완료 (카탈로그 정상 출력)
+import re  # 카탈로그 데이터 정리에 필수적인 모듈 (절대 삭제 안 함)
 import random
 import asyncio
 import base64
@@ -303,12 +303,12 @@ UI_TEXT["JP"].update({
     "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비マスター_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
 })
 
-# 5. API 설정 (2026년 기준 3.8-flash)
+# 5. API 설정 (가장 검증되고 에러 없는 3.6-flash 버전으로 복귀)
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-# --- 6. 상태 관리 및 🚨 방어막 4: 언어 자동 동기화 기초 설계 ---
+# --- 6. 상태 관리 및 🚨 언어 자동 동기화 기초 설계 ---
 if "messages" not in st.session_state: st.session_state.messages = []
 if "selected_category" not in st.session_state: st.session_state.selected_category = None
 if "chat_query" not in st.session_state: st.session_state.chat_query = None
@@ -459,7 +459,7 @@ with st.sidebar:
         display_name = t["categories"].get(cat_name, f"📌 {cat_name[:6]}..")
         grid_cols[idx % 2].button(display_name, on_click=set_category, args=(cat_name,), use_container_width=True)
 
-    # 🚨 취소선 방어막: AI에게 숫자에 물결표(~)를 절대로 쓰지 말라고 지시
+    # 🚨 안정적인 3.6-flash 복귀 및 취소선 방어 지시문
     system_instruction = f"""
     너는 호주 프리미엄 건강식품 매장 'AGH GREENHEALTH'의 AI '바이오'야.
     제품 설명 시 절대 HTML 태그(<hr>, <div>, <h3> 등)를 사용하지 마라!
@@ -468,7 +468,7 @@ with st.sidebar:
     손님이 비교를 요청하면 마크다운 표(Table) 형식으로 정리해라.
     {t['ai_lang_cmd']}
     """
-    model = genai.GenerativeModel(model_name='gemini-3.8-flash', system_instruction=system_instruction)
+    model = genai.GenerativeModel(model_name='gemini-3.6-flash', system_instruction=system_instruction)
 
     st.divider()
     if kakao_img_src:

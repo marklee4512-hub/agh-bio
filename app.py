@@ -1,5 +1,4 @@
 import os
-import re
 import random
 import asyncio
 import base64
@@ -126,7 +125,7 @@ components.html("""
 """, height=0)
 
 
-# --- 🎯 1번 추가: 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
+# --- 🎯 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
 PRODUCT_TRANSLATIONS = {
     "마누카꿀": {"GB": "Manuka Honey", "CN": "麦卢卡蜂蜜", "JP": "マヌカハニー"},
     "초록입홍합": {"GB": "Green Lipped Mussel", "CN": "绿唇贻贝", "JP": "緑イ貝"},
@@ -159,7 +158,7 @@ def get_translated_product(korean_name, korean_eff, lang):
     
     return t_name, t_eff
 
-# --- 🎯 2번 추가: 스마트 필터용 태그 생성기 ---
+# --- 🎯 스마트 필터용 태그 생성기 ---
 def get_mock_tags(product_name):
     hash_val = sum(ord(c) for c in product_name)
     is_vegan = hash_val % 2 == 0
@@ -296,7 +295,7 @@ UI_TEXT["JP"].update({
     "ship_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 配送基本情報</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>発送日程:</b> 毎週火曜日・木曜日 午後1時に一括発送</li><li><b>配送期間:</b> 営業日基準 5〜7日所要</li><li><b>免税限度:</b> 健康機能食品 1人1回<b>最大6個</b> (その他品目は最大5kg)</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 通関必須の準備物</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li>受取人の実名および韓国の携帯電話番号</li><li><b>個人通関固有符号</b> (受取人名義と必ず一致している必要があります)</li><li>正確な道路名住所</li></ul></div>",
     "ship_warn": "⚠️ **注意:** 液体類（マヌカハニー、プロポリスリキッド等）は機内持ち込みが厳しく禁止されています。必ず**預け入れ荷物**に入れてください！",
     "trs_title": "💰 TRS (空港税金還付) 完璧ガイド",
-    "trs_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 還付基本条件</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>購入金額:</b> AGH店舗での単一決済額 <b>$300以上</b> の場合に還付可能</li><li><b>還付率:</b> 決済金額の約 <b>9%</b> 還付</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 空港必須持参物および場所</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>持ち物:</b> 店舗実物レシート (Tax Invoice)、購入した製品の実物、パスポート、搭乗券</li><li><b>場所:</b> シドニー空港出国審査（セキュリティチェック）通過後の免税エリア（Airside）内 <b>TRSカウンター</b></li></ul></div>",
+    "trs_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 還付基本条件</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>購入金額:</b> AGH店舗での単一決済額 <b>$300以上</b> の場合に還付可能</li><li><b>還付率:</b> 決済金額の約 <b>9%</b> 還付</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 空港必須持参物および場所</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>持ち物:</b> 店舗実物レシート (Tax Invoice)、購入した製品の実物、パスポート、搭乗券</li><li><b>場所:</b> シドニー空港出国審査（セキュリティチェック）通過後の免エリア（Airside）内 <b>TRSカウンター</b></li></ul></div>",
     "trs_tip": "💡 **スマートなヒント:** 空港に向かう前に、スマートフォンに **'TRSアプリ'** をダウンロードし、レシート情報を事前に入力しておいてください！専用レーンでスムーズに還付手続きができます。",
     "md_recommend": "👑 今週の店長おすすめ", "top5": "🔥 リアルタイム売上 TOP 5", "catalog": "📁 製品カタログ",
     "reset_chat": "🔄 対話リセット", "quick_search": "🔍 クイックテーマ検索:",
@@ -321,10 +320,10 @@ UI_TEXT["JP"].update({
     "float2": "1店舗で$300以上のお買い上げで<br>空港免税(9%)の特典をお見逃しなく！✈️",
     "float3": "左側のサイドバーのカテゴリボタンを押して<br>カテゴリ別の製品をご覧ください 👆",
     "float4": "目の健康、関節、疲労回復など<br>症状にぴったりの製品をおすすめします！🍀",
-    "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비マスター_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
+    "categories": { "뼈_관절_연골": "🦴 骨・関節", "눈_시력": "👁️ 目の健康", "면역력_에너지": "⚡ 免疫・疲労回復", "심혈관_콜레스테롤_간": "❤️ 心血管・肝臓", "여성건강_노화방지": "👩 女性・アンチエイジング", "기관지_구강": "🗣️ 気管支・口腔", "두뇌_혈행": "🧠 脳・睡眠", "유산균_비타민_어린이_성인_남성": "💊 マルチビタミン", "위건강_마누카꿀": "🍯 マヌカハニー・胃腸", "뷰티": "✨ 美容・ギフト", "반려동물_건강": "🐶 ペットの健康", "기타_라이프스타일": "🛏️ ライフスタイル" }
 })
 
-# 5. API 설정 (2026년 기준 최신 gemini-3.6-flash 적용 완료)
+# 5. API 설정 (2026년 기준 최신 gemini-3.8-flash 적용 완료)
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
@@ -451,8 +450,8 @@ with st.sidebar:
     손님이 비교를 요청하면 마크다운 표(Table) 형식으로 정리해라.
     {t['ai_lang_cmd']}
     """
-    # 2026년 기준 3.6-flash 모델
-    model = genai.GenerativeModel(model_name='gemini-3.6-flash', system_instruction=system_instruction)
+    # 2026년 최신 3.8-flash 모델로 안전하게 업그레이드 완료
+    model = genai.GenerativeModel(model_name='gemini-3.8-flash', system_instruction=system_instruction)
 
     st.divider()
     if kakao_img_src:
@@ -575,8 +574,9 @@ with tab1:
 
     for message in st.session_state.messages:
         display_content = message["content"].replace(t["ai_lang_cmd"], "").strip()
-        display_content = re.sub(r'```html\n?', '', display_content)
-        display_content = re.sub(r'```\n?', '', display_content)
+        
+        # 🚨 에러 원천 차단: 정규식(re.sub) 대신 절대 안전한 순수 replace 문자열 치환 사용
+        display_content = display_content.replace("```html\n", "").replace("```html", "").replace("```\n", "").replace("```", "")
         
         if display_content:
             with st.chat_message(message["role"]): 
@@ -601,8 +601,8 @@ with tab1:
                     response = chat.send_message(injected_prompt)
                     ai_response = response.text
                     
-                    cleaned_response = re.sub(r'```html\n?', '', ai_response)
-                    cleaned_response = re.sub(r'```\n?', '', cleaned_response)
+                    # 🚨 에러 원천 차단: 정규식(re.sub) 대신 절대 안전한 순수 replace 문자열 치환 사용
+                    cleaned_response = ai_response.replace("```html\n", "").replace("```html", "").replace("```\n", "").replace("```", "")
                     
                     st.markdown(cleaned_response, unsafe_allow_html=True)
                     if audio_on: autoplay_audio(cleaned_response, lang_code)

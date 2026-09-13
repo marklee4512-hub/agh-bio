@@ -1,4 +1,5 @@
 import os
+import re
 import random
 import asyncio
 import base64
@@ -36,7 +37,7 @@ logo_img_src = f"data:image/png;base64,{logo_b64}" if logo_b64 else ""
 qr_b64 = get_base64_of_bin_file("image_1c2eaf.jpg")
 qr_img_src = f"data:image/jpeg;base64,{qr_b64}" if qr_b64 else ""
 
-# --- 3. 🎨 프리미엄 CSS (필터 태그 스타일 추가) ---
+# --- 3. 🎨 프리미엄 CSS (필터 태그 스타일) ---
 st.markdown(f"""
 <style>
     h1, h2, h3 {{ color: #005A32 !important; font-weight: 800; }}
@@ -125,7 +126,7 @@ components.html("""
 """, height=0)
 
 
-# --- 🛡️ 방어벽 2: 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
+# --- 🎯 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
 PRODUCT_TRANSLATIONS = {
     "마누카꿀": {"GB": "Manuka Honey", "CN": "麦卢卡蜂蜜", "JP": "マヌカハニー"},
     "초록입홍합": {"GB": "Green Lipped Mussel", "CN": "绿唇贻贝", "JP": "緑イ貝"},
@@ -185,9 +186,7 @@ UI_TEXT = {
         
         "filter_title": "🎯 성분 스마트 필터:", "f_vegan": "🌱 비건/식물성", "f_preg": "🤰 임산부 안심", "f_gluten": "🚫 글루텐 프리",
         
-        # 버튼 텍스트
         "theme1_btn": "#✈️ 호주 귀국 필수 선물", "theme2_btn": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3_btn": "#💻 만성피로 직장인 추천",
-        # 🚨 AI에게 전달되는 실제 백그라운드 프롬프트 명령
         "theme1_prompt": "호주 귀국 시 가족과 지인들에게 선물하기 가장 좋은 베스트 제품들을 추천해 줘.",
         "theme2_prompt": "50대~60대 부모님 관절과 눈 건강에 좋은 효도 선물 세트를 추천해 줘.",
         "theme3_prompt": "매일 야근하고 피곤한 직장인에게 간 건강과 피로회복에 좋은 제품을 비교해서 추천해 줘.",
@@ -344,10 +343,13 @@ def trigger_ai_consultation(query, img_path=None):
     st.session_state.chat_img = img_path
     st.session_state.selected_category = None
 
-# --- 7. JSON 데이터 로더 ---
+# --- 7. JSON 데이터 로더 (완벽 복원 및 에러 처리 보완) ---
 @st.cache_data
 def load_product_data():
-    file_path = 'products.json'
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'products.json')
+    if not os.path.exists(file_path):
+        file_path = 'products.json'
+    
     categories = {}
     flat_products = []
     if os.path.exists(file_path):
@@ -362,6 +364,7 @@ def load_product_data():
                                 link = item.get("link", "")
                                 extracted_id = "default"
                                 if link:
+                                    # 🚨 여기서 사용되는 re.search가 작동하도록 상단에 import re 복구 완료
                                     match_srl = re.search(r'document_srl=(\d+)', link)
                                     match_slash = re.search(r'/(\d+)/?$', link)
                                     if match_srl: extracted_id = match_srl.group(1)
@@ -370,21 +373,12 @@ def load_product_data():
                                 cat_list.append(item)
                                 flat_products.append(item)
                         categories[cat_name] = cat_list
-        except Exception: pass
+        except Exception as e: 
+            st.error(f"데이터 로딩 에러: {e}") # 에러를 숨기지 않고 파악할 수 있도록 조치
     return categories, flat_products
 
 categories_db, products_db = load_product_data()
 
-# 🛡️ 방어벽 1: 하드코딩된 '불사신 카테고리' 안전망 (버튼 증발 방지)
-GUARANTEED_CATEGORIES = [
-    "뼈_관절_연골", "눈_시력", "면역력_에너지", "심혈관_콜레스테롤_간", 
-    "여성건강_노화방지", "기관지_구강", "두뇌_혈행", "유산균_비타민_어린이_성인_남성", 
-    "위건강_마누카꿀", "뷰티", "반려동물_건강", "기타_라이프스타일"
-]
-# JSON이 텅 비어있어도 사이드바 버튼을 생성할 수 있도록 기본 키 할당
-for cat in GUARANTEED_CATEGORIES:
-    if cat not in categories_db:
-        categories_db[cat] = []
 
 # 음성 재생
 async def generate_audio(text, lang_choice):
@@ -446,10 +440,11 @@ with st.sidebar:
         t_name, _ = get_translated_product(top_name, "", lang_code)
         st.button(f"{medals[idx]} {t_name}", key=f"top_{idx}", on_click=trigger_ai_consultation, args=(t["prod_recommend_prompt"].replace("{product}", t_name), None), use_container_width=True)
 
-    # 🛡️ 불사신 카테고리 로드 (버튼 증발 영구 차단)
+    # 🛡️ 원본 카테고리 로딩 복원 (빈 리스트 우회벽 철거)
     st.markdown(f"### {t['catalog']}")
+    cat_keys = list(categories_db.keys())
     grid_cols = st.columns(2)
-    for idx, cat_name in enumerate(GUARANTEED_CATEGORIES):
+    for idx, cat_name in enumerate(cat_keys):
         display_name = t["categories"].get(cat_name, f"📌 {cat_name[:6]}..")
         grid_cols[idx % 2].button(display_name, on_click=set_category, args=(cat_name,), use_container_width=True)
 
@@ -460,7 +455,6 @@ with st.sidebar:
     손님이 비교를 요청하면 마크다운 표(Table) 형식으로 정리해라.
     {t['ai_lang_cmd']}
     """
-    # 2026년 최신 3.8-flash 업그레이드 완료 (에러 위험 제로)
     model = genai.GenerativeModel(model_name='gemini-3.8-flash', system_instruction=system_instruction)
 
     st.divider()
@@ -521,11 +515,9 @@ with tab1:
                 p_img = prod.get("image_file", "") 
                 p_eff = prod.get("efficacy", "")
                 
-                # 🛡️ 방어벽 2 적용: 안전한 번역
                 t_name, t_eff = get_translated_product(p_name, p_eff, lang_code)
                 is_vegan, is_preg, is_gluten = get_mock_tags(p_name)
                 
-                # 필터 조건 연동
                 if (fil_veg and not is_vegan) or (fil_preg and not is_preg) or (fil_glut and not is_gluten):
                     continue
                 
@@ -540,7 +532,6 @@ with tab1:
                         
                         st.markdown(f'<span class="product-name">{t_name}</span>', unsafe_allow_html=True)
                         
-                        # 예쁜 태그 출력
                         tag_html = ""
                         if is_vegan: tag_html += f'<span class="tag-pill tag-vegan">{t["f_vegan"]}</span>'
                         if is_preg: tag_html += f'<span class="tag-pill tag-preg">{t["f_preg"]}</span>'
@@ -549,7 +540,6 @@ with tab1:
                         
                         st.caption(f"{t_eff[:50]}..." if len(t_eff) > 50 else t_eff)
                         
-                        # AI에게 전달하는 프롬프트도 번역된 이름 사용
                         st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{drawn}_{p_name}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", t_name), img_path), use_container_width=True)
                 drawn += 1
 
@@ -583,8 +573,6 @@ with tab1:
 
     for message in st.session_state.messages:
         display_content = message["content"].replace(t["ai_lang_cmd"], "").strip()
-        
-        # 🛡️ 방어벽 3: 정규식 충돌 완전히 차단. 파이썬 기본 replace 사용.
         display_content = display_content.replace("```html\n", "").replace("```html", "").replace("```\n", "").replace("```", "")
         
         if display_content:
@@ -610,7 +598,6 @@ with tab1:
                     response = chat.send_message(injected_prompt)
                     ai_response = response.text
                     
-                    # 🛡️ 방어벽 3 적용
                     cleaned_response = ai_response.replace("```html\n", "").replace("```html", "").replace("```\n", "").replace("```", "")
                     
                     st.markdown(cleaned_response, unsafe_allow_html=True)

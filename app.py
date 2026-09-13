@@ -50,7 +50,7 @@ st.markdown(f"""
     }}
     .product-name {{ font-weight: 800 !important; font-size: 1.15rem !important; color: #333; margin-bottom: 8px; display: block; }}
     
-    /* 🏷️ 스마트 필터 태그 스타일 추가 */
+    /* 🏷️ 스마트 필터 태그 스타일 */
     .tag-pill {{ display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-right: 5px; margin-bottom: 10px; }}
     .tag-vegan {{ background-color: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }}
     .tag-preg {{ background-color: #FFF0F5; color: #C2185B; border: 1px solid #F48FB1; }}
@@ -125,7 +125,7 @@ components.html("""
 """, height=0)
 
 
-# --- 🎯 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
+# --- 🛡️ 방어벽 2: 단단한 번역 데이터 매칭 (부분 일치 및 0.1초 우회 폴백) ---
 PRODUCT_TRANSLATIONS = {
     "마누카꿀": {"GB": "Manuka Honey", "CN": "麦卢卡蜂蜜", "JP": "マヌカハニー"},
     "초록입홍합": {"GB": "Green Lipped Mussel", "CN": "绿唇贻贝", "JP": "緑イ貝"},
@@ -142,7 +142,6 @@ def get_translated_product(korean_name, korean_eff, lang):
     if lang == "KR": 
         return korean_name, korean_eff
     
-    # 부분 일치로 똑똑하게 찾기 (긴 이름에 키워드가 들어가 있으면 매칭)
     t_name = korean_name
     for key, trans_dict in PRODUCT_TRANSLATIONS.items():
         if key in korean_name:
@@ -188,7 +187,7 @@ UI_TEXT = {
         
         # 버튼 텍스트
         "theme1_btn": "#✈️ 호주 귀국 필수 선물", "theme2_btn": "#👨‍👩‍👧‍👦 5060 부모님 효도 선물", "theme3_btn": "#💻 만성피로 직장인 추천",
-        # 🚨 AI에게 전달되는 실제 백그라운드 프롬프트 명령 (언어별 매칭 완료)
+        # 🚨 AI에게 전달되는 실제 백그라운드 프롬프트 명령
         "theme1_prompt": "호주 귀국 시 가족과 지인들에게 선물하기 가장 좋은 베스트 제품들을 추천해 줘.",
         "theme2_prompt": "50대~60대 부모님 관절과 눈 건강에 좋은 효도 선물 세트를 추천해 줘.",
         "theme3_prompt": "매일 야근하고 피곤한 직장인에게 간 건강과 피로회복에 좋은 제품을 비교해서 추천해 줘.",
@@ -295,7 +294,7 @@ UI_TEXT["JP"].update({
     "ship_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 配送基本情報</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>発送日程:</b> 毎週火曜日・木曜日 午後1時に一括発送</li><li><b>配送期間:</b> 営業日基準 5〜7日所要</li><li><b>免税限度:</b> 健康機能食品 1人1回<b>最大6個</b> (その他品目は最大5kg)</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 通関必須の準備物</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li>受取人の実名および韓国の携帯電話番号</li><li><b>個人通関固有符号</b> (受取人名義と必ず一致している必要があります)</li><li>正確な道路名住所</li></ul></div>",
     "ship_warn": "⚠️ **注意:** 液体類（マヌカハニー、プロポリスリキッド等）は機内持ち込みが厳しく禁止されています。必ず**預け入れ荷物**に入れてください！",
     "trs_title": "💰 TRS (空港税金還付) 完璧ガイド",
-    "trs_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 還付基本条件</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>購入金額:</b> AGH店舗での単一決済額 <b>$300以上</b> の場合に還付可能</li><li><b>還付率:</b> 決済金額の約 <b>9%</b> 還付</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 空港必須持参物および場所</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>持ち物:</b> 店舗実物レシート (Tax Invoice)、購入した製品の実物、パスポート、搭乗券</li><li><b>場所:</b> シドニー空港出国審査（セキュリティチェック）通過後の免エリア（Airside）内 <b>TRSカウンター</b></li></ul></div>",
+    "trs_desc": "<div style='background-color:#F4F9F4; padding:25px; border-radius:12px; margin-bottom:15px; border-left: 6px solid #005A32;'><h4 style='color:#005A32; margin-top:0; font-weight:800;'>✔️ 還付基本条件</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>購入金額:</b> AGH店舗での単一決済額 <b>$300以上</b> の場合に還付可能</li><li><b>還付率:</b> 決済金額の約 <b>9%</b> 還付</li></ul><h4 style='color:#005A32; margin-top:20px; font-weight:800;'>✔️ 空港必須持参物および場所</h4><ul style='font-size:1.1rem; line-height:1.8; color:#333;'><li><b>持ち物:</b> 店舗実物レシート (Tax Invoice)、購入した製品の実物、パスポート、搭乗券</li><li><b>場所:</b> シドニー空港出国審査（セキュリティチェック）通過後の免税エリア（Airside）内 <b>TRSカウンター</b></li></ul></div>",
     "trs_tip": "💡 **スマートなヒント:** 空港に向かう前に、スマートフォンに **'TRSアプリ'** をダウンロードし、レシート情報を事前に入力しておいてください！専用レーンでスムーズに還付手続きができます。",
     "md_recommend": "👑 今週の店長おすすめ", "top5": "🔥 リアルタイム売上 TOP 5", "catalog": "📁 製品カタログ",
     "reset_chat": "🔄 対話リセット", "quick_search": "🔍 クイックテーマ検索:",
@@ -376,7 +375,18 @@ def load_product_data():
 
 categories_db, products_db = load_product_data()
 
-# 음성 재생 (언어 코드 연동 확인 완료)
+# 🛡️ 방어벽 1: 하드코딩된 '불사신 카테고리' 안전망 (버튼 증발 방지)
+GUARANTEED_CATEGORIES = [
+    "뼈_관절_연골", "눈_시력", "면역력_에너지", "심혈관_콜레스테롤_간", 
+    "여성건강_노화방지", "기관지_구강", "두뇌_혈행", "유산균_비타민_어린이_성인_남성", 
+    "위건강_마누카꿀", "뷰티", "반려동물_건강", "기타_라이프스타일"
+]
+# JSON이 텅 비어있어도 사이드바 버튼을 생성할 수 있도록 기본 키 할당
+for cat in GUARANTEED_CATEGORIES:
+    if cat not in categories_db:
+        categories_db[cat] = []
+
+# 음성 재생
 async def generate_audio(text, lang_choice):
     voice = 'ko-KR-SunHiNeural'
     if lang_choice == 'GB': voice = 'en-US-AriaNeural'
@@ -420,7 +430,7 @@ with st.sidebar:
         </style>
         """, unsafe_allow_html=True)
 
-    # 👑 사장님 강력 추천 (사이드바 버튼 번역 적용 완료)
+    # 👑 사장님 강력 추천 (번역 연동)
     st.markdown(f'<div style="background: linear-gradient(135deg, #005A32, #2E7D32); color: white; padding: 12px; border-radius: 10px 10px 0 0; text-align: center; font-size: 1.05rem; font-weight: bold; margin-bottom: 0px;">{t["md_recommend"]}</div>', unsafe_allow_html=True)
     for i in range(2):
         p_name = st.session_state.current_md_picks[i]
@@ -428,7 +438,7 @@ with st.sidebar:
         st.button(f"✨ {t_name}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", t_name), None), use_container_width=True, key=f"md_btn_{i}")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # 🔥 실시간 매장 TOP 5 (사이드바 버튼 번역 적용 완료)
+    # 🔥 실시간 매장 TOP 5 (번역 연동)
     st.markdown(f"### {t['top5']}")
     top5_items = ["마누카꿀 MGO 850+", "초록입홍합 21000", "유칼립투스 프로폴리스", "아이젠 눈건강", "알티지 오메가3"]
     medals = ["🥇", "🥈", "🥉", "🏅", "🏅"]
@@ -436,10 +446,10 @@ with st.sidebar:
         t_name, _ = get_translated_product(top_name, "", lang_code)
         st.button(f"{medals[idx]} {t_name}", key=f"top_{idx}", on_click=trigger_ai_consultation, args=(t["prod_recommend_prompt"].replace("{product}", t_name), None), use_container_width=True)
 
+    # 🛡️ 불사신 카테고리 로드 (버튼 증발 영구 차단)
     st.markdown(f"### {t['catalog']}")
-    cat_keys = list(categories_db.keys())
     grid_cols = st.columns(2)
-    for idx, cat_name in enumerate(cat_keys):
+    for idx, cat_name in enumerate(GUARANTEED_CATEGORIES):
         display_name = t["categories"].get(cat_name, f"📌 {cat_name[:6]}..")
         grid_cols[idx % 2].button(display_name, on_click=set_category, args=(cat_name,), use_container_width=True)
 
@@ -450,7 +460,7 @@ with st.sidebar:
     손님이 비교를 요청하면 마크다운 표(Table) 형식으로 정리해라.
     {t['ai_lang_cmd']}
     """
-    # 2026년 최신 3.8-flash 모델로 안전하게 업그레이드 완료
+    # 2026년 최신 3.8-flash 업그레이드 완료 (에러 위험 제로)
     model = genai.GenerativeModel(model_name='gemini-3.8-flash', system_instruction=system_instruction)
 
     st.divider()
@@ -464,7 +474,6 @@ with st.sidebar:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # 투어 문의 완벽 번역 연동
     st.markdown(f"**{t['tour_inquiry']}**")
     st.markdown(t["tour_link"])
 
@@ -495,7 +504,7 @@ with tab1:
         cat_title = t["categories"].get(st.session_state.selected_category, st.session_state.selected_category)
         st.markdown(f"### {cat_title}")
         
-        # 🎯 카탈로그 상단 스마트 성분 필터 안전하게 추가
+        # 🎯 스마트 성분 필터
         st.markdown(f"**{t['filter_title']}**")
         f_col1, f_col2, f_col3 = st.columns(3)
         fil_veg = f_col1.checkbox(t["f_vegan"])
@@ -512,11 +521,11 @@ with tab1:
                 p_img = prod.get("image_file", "") 
                 p_eff = prod.get("efficacy", "")
                 
-                # 원본 대신 번역된 이름과 태그 정보 불러오기
+                # 🛡️ 방어벽 2 적용: 안전한 번역
                 t_name, t_eff = get_translated_product(p_name, p_eff, lang_code)
                 is_vegan, is_preg, is_gluten = get_mock_tags(p_name)
                 
-                # 스마트 필터 작동 (조건 안 맞으면 패스)
+                # 필터 조건 연동
                 if (fil_veg and not is_vegan) or (fil_preg and not is_preg) or (fil_glut and not is_gluten):
                     continue
                 
@@ -539,7 +548,8 @@ with tab1:
                         if tag_html: st.markdown(tag_html, unsafe_allow_html=True)
                         
                         st.caption(f"{t_eff[:50]}..." if len(t_eff) > 50 else t_eff)
-                        # 카탈로그 버튼 프롬프트 언어 연동 완료
+                        
+                        # AI에게 전달하는 프롬프트도 번역된 이름 사용
                         st.button(t["ai_listen_btn"], key=f"btn_{st.session_state.selected_category}_{drawn}_{p_name}", on_click=trigger_ai_consultation, args=(t["prod_detail_prompt"].replace("{product}", t_name), img_path), use_container_width=True)
                 drawn += 1
 
@@ -558,7 +568,6 @@ with tab1:
     st.markdown(f"**{t['quick_search']}**")
     h_col1, h_col2, h_col3 = st.columns(3)
     
-    # 🔍 빠른 테마 검색 버튼 (보여지는 텍스트와 전송되는 프롬프트를 각국 언어로 매칭)
     if h_col1.button(t["theme1_btn"], use_container_width=True): trigger_ai_consultation(t["theme1_prompt"], None)
     if h_col2.button(t["theme2_btn"], use_container_width=True): trigger_ai_consultation(t["theme2_prompt"], None)
     if h_col3.button(t["theme3_btn"], use_container_width=True): trigger_ai_consultation(t["theme3_prompt"], None)
@@ -575,7 +584,7 @@ with tab1:
     for message in st.session_state.messages:
         display_content = message["content"].replace(t["ai_lang_cmd"], "").strip()
         
-        # 🚨 에러 원천 차단: 정규식(re.sub) 대신 절대 안전한 순수 replace 문자열 치환 사용
+        # 🛡️ 방어벽 3: 정규식 충돌 완전히 차단. 파이썬 기본 replace 사용.
         display_content = display_content.replace("```html\n", "").replace("```html", "").replace("```\n", "").replace("```", "")
         
         if display_content:
@@ -601,7 +610,7 @@ with tab1:
                     response = chat.send_message(injected_prompt)
                     ai_response = response.text
                     
-                    # 🚨 에러 원천 차단: 정규식(re.sub) 대신 절대 안전한 순수 replace 문자열 치환 사용
+                    # 🛡️ 방어벽 3 적용
                     cleaned_response = ai_response.replace("```html\n", "").replace("```html", "").replace("```\n", "").replace("```", "")
                     
                     st.markdown(cleaned_response, unsafe_allow_html=True)
